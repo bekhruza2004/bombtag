@@ -173,6 +173,7 @@
                     this.bomb.x = this.bombHolder.x;
                     this.bomb.y = this.bombHolder.y - 30;
                     this.bomb.setVelocity(0, 0);
+                    this.bomb.body.enable = false;
                 }
 
                 const p1Grounded = this.player1.body.touching.down || this.player1.body.blocked.down;
@@ -271,6 +272,8 @@
             throwBomb(player) {
                 this.bombHolder = null;
                 this.bombThrown = true;
+                this.bomb.body.enable = true;
+                const thrower = player;
 
                 let throwX = 0;
                 if (player === this.player1) {
