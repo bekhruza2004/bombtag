@@ -239,6 +239,101 @@
                this.lastTimerUpdate = 0;
            }
 
+                      update(time, delta) {
+               if (!this.gameStarted) return;
+
+
+               if (this.bombHolder) {
+                   this.bomb.x = this.bombHolder.x;
+                   this.bomb.y = this.bombHolder.y - 30;
+                   this.bomb.setVelocity(0, 0);
+                   this.bomb.body.enable = false;
+               }
+
+
+               const p1Grounded = this.player1.body.touching.down || this.player1.body.blocked.down;
+               const p2Grounded = this.player2.body.touching.down || this.player2.body.blocked.down;
+
+
+               if (p1Grounded && !this.player1WasGrounded) {
+                   this.player1Jumps = 0;
+               }
+               if (p2Grounded && !this.player2WasGrounded) {
+                   this.player2Jumps = 0;
+               }
+
+
+               this.player1WasGrounded = p1Grounded;
+               this.player2WasGrounded = p2Grounded;
+
+
+               // Player 1 controls (WASD)
+               if (this.wasd.left.isDown) {
+                   this.player1.setVelocityX(-200);
+               } else if (this.wasd.right.isDown) {
+                   this.player1.setVelocityX(200);
+               } else {
+                   this.player1.setVelocityX(0);
+               }
+
+
+               if (Phaser.Input.Keyboard.JustDown(this.wasd.up) && this.player1Jumps < 2) {
+                   this.player1.setVelocityY(-400);
+                   this.player1Jumps++;
+               }
+
+
+               if (Phaser.Input.Keyboard.JustDown(this.wasd.throw) && this.bombHolder === this.player1) {
+                   this.throwBomb(this.player1);
+               }
+
+
+               // Player 2 controls (Arrow keys)
+               if (this.cursors.left.isDown) {
+                   this.player2.setVelocityX(-200);
+               } else if (this.cursors.right.isDown) {
+                   this.player2.setVelocityX(200);
+               } else {
+                   this.player2.setVelocityX(0);
+               }
+
+
+               if (Phaser.Input.Keyboard.JustDown(this.cursors.up) && this.player2Jumps < 2) {
+                   this.player2.setVelocityY(-400);
+                   this.player2Jumps++;
+               }
+
+
+               if (Phaser.Input.Keyboard.JustDown(this.arrowThrow) && this.bombHolder === this.player2) {
+                   this.throwBomb(this.player2);
+               }
+
+               // Update timer
+               this.lastTimerUpdate += delta;
+               if (this.lastTimerUpdate >= 1000) {
+                   this.lastTimerUpdate = 0;
+                   this.bombTimer--;
+
+
+                   let color = '#fff';
+                   if (this.bombTimer <= 5) {
+                       color = '#ff0000';
+                   } else if (this.bombTimer <= 10) {
+                       color = '#ff9900';
+                   }
+
+
+                   this.timerText.setText('BOMB: ' + this.bombTimer + 's');
+                   this.timerText.setColor(color);
+
+
+                   if (this.bombTimer <= 0) {
+                       this.explodeBomb();
+                   }
+               }
+           }
+
+
     </script>
 </body>
 </html>
